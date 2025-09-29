@@ -55,6 +55,11 @@
 (require 'seq)
 (require 'subr-x)
 
+;; Declare external variables and functions from evil-mode
+(defvar evil-state)
+(defvar evil-mode)
+(declare-function evil-emacs-state "evil-states" ())
+
 ;;;; Custom variables
 (defgroup emacs-cdp nil
   "Emacs interface for Chrome DevTools Protocol."
@@ -92,6 +97,8 @@
 (defvar emacs-cdp-current-tab nil
   "Currently selected Chrome tab alist.")
 
+(defvar emacs-cdp--previous-evil-state nil
+  "Previous evil state before enabling emacs-cdp-mode.")
 
 ;;;; Connection helpers
 (defun emacs-cdp-connected-p ()
@@ -278,6 +285,7 @@ Optional ON-CONNECTED function is called after connection is established."
     map)
   "Keymap for Chrome CDP control mode.")
 
+;;;###autoload
 (define-minor-mode emacs-cdp-mode
   "Chrome DevTools Protocol control mode.
 When enabled, all keystrokes are sent to Chrome via CDP."
@@ -303,6 +311,7 @@ When enabled, all keystrokes are sent to Chrome via CDP."
 
 ;;;; Interactive commands
 ;; Connection management
+;;;###autoload
 (defun emacs-cdp-select-tab ()
   "Prompt user to select a Chrome tab and connect."
   (interactive)
@@ -313,6 +322,7 @@ When enabled, all keystrokes are sent to Chrome via CDP."
     (prog1 (emacs-cdp-connect-tab tab)
       (message "Connected to tab"))))
 
+;;;###autoload
 (defun emacs-cdp-new-tab ()
   "Create new Chrome tab and connect to it."
   (interactive)
@@ -334,6 +344,7 @@ When enabled, all keystrokes are sent to Chrome via CDP."
     (error
      (message "Failed to create new tab: %s" err))))
 
+;;;###autoload
 (defun emacs-cdp-start-chrome ()
   "Start Chrome with remote debugging enabled."
   (interactive)
@@ -346,17 +357,20 @@ When enabled, all keystrokes are sent to Chrome via CDP."
     (message "Chrome started on port %d" emacs-cdp-debug-port)))
 
 ;; Page control
+;;;###autoload
 (defun emacs-cdp-reload-page ()
   "Reload the current Chrome page."
   (interactive)
   (emacs-cdp-send "Page.reload"))
 
+;;;###autoload
 (defun emacs-cdp-insert-text ()
   "Insert text to Chrome via minibuffer."
   (interactive)
   (let ((text (read-string "Text to insert: ")))
     (emacs-cdp-send "Input.insertText" `(("text" . ,text)))))
 
+;;;###autoload
 (defun emacs-cdp-navigate (url)
   "Navigate current tab to URL."
   (interactive "sURL: ")
