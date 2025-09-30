@@ -119,6 +119,21 @@ Customize the package behavior:
 (setq emacs-cdp-debug t)
 ```
 
+#### Configuration for Evil Users
+
+If you use Evil, you can configure a hook to automatically switch to Emacs state when `emacs-cdp-mode` is enabled:
+
+```elisp
+(add-hook 'emacs-cdp-mode-hook
+          (lambda ()
+            (when (bound-and-true-p evil-mode)
+              (if emacs-cdp-mode
+                  ;; When CDP mode is enabled: switch to Emacs state
+                  (evil-emacs-state)
+                ;; When CDP mode is disabled: return to Normal state
+                (evil-normal-state)))))
+```
+
 ## Example Workflow
 
 ```elisp

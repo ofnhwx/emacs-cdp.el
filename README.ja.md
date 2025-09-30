@@ -119,6 +119,21 @@ CDP モードが有効な場合:
 (setq emacs-cdp-debug t)
 ```
 
+#### Evil ユーザー向けの設定
+
+Evil を使用している場合、`emacs-cdp-mode` 有効時に自動的に Emacs state に移行するようフックを設定できます:
+
+```elisp
+(add-hook 'emacs-cdp-mode-hook
+          (lambda ()
+            (when (bound-and-true-p evil-mode)
+              (if emacs-cdp-mode
+                  ;; CDP モード有効時: Emacs state に移行
+                  (evil-emacs-state)
+                ;; CDP モード無効時: Normal state に戻る
+                (evil-normal-state)))))
+```
+
 ## ワークフローの例
 
 ```elisp

@@ -55,11 +55,6 @@
 (require 'seq)
 (require 'subr-x)
 
-;; Declare external variables and functions from evil-mode
-(defvar evil-state)
-(defvar evil-mode)
-(declare-function evil-emacs-state "evil-states" ())
-
 ;;;; Custom variables
 (defgroup emacs-cdp nil
   "Emacs interface for Chrome DevTools Protocol."
@@ -96,9 +91,6 @@
 
 (defvar emacs-cdp-current-tab nil
   "Currently selected Chrome tab alist.")
-
-(defvar emacs-cdp--previous-evil-state nil
-  "Previous evil state before enabling emacs-cdp-mode.")
 
 ;;;; Connection helpers
 (defun emacs-cdp-connected-p ()
@@ -290,14 +282,7 @@ Optional ON-CONNECTED function is called after connection is established."
   "Chrome DevTools Protocol control mode.
 When enabled, all keystrokes are sent to Chrome via CDP."
   :lighter " CDP"
-  :keymap emacs-cdp-mode-map
-  (if emacs-cdp-mode
-      (when (and (bound-and-true-p evil-mode) (bound-and-true-p evil-state))
-        (setq emacs-cdp--previous-evil-state evil-state)
-        (evil-emacs-state))
-    (when (and (boundp 'emacs-cdp--previous-evil-state) emacs-cdp--previous-evil-state)
-      (funcall (intern (format "evil-%s-state" emacs-cdp--previous-evil-state)))
-      (setq emacs-cdp--previous-evil-state nil))))
+  :keymap emacs-cdp-mode-map)
 
 (defun emacs-cdp-key-handler ()
   "Handle key events in key-send mode."
